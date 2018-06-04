@@ -43,7 +43,7 @@ class Scene extends React.Component {
     }
   }
   handleScan = (data) => {
-    if (data) {
+    if (data && data.length === 24) {
       this.props.requestGetWork({
         staffId: data,
       });
@@ -95,7 +95,6 @@ class Scene extends React.Component {
       getWork,
       auth,
     } = this.props;
-    console.log(auth);
     return (
       <Layout>
         {stopCapture ?
@@ -117,7 +116,9 @@ class Scene extends React.Component {
               handleFacingMode={this.handleFacingMode}
             />
             <Prompt {...getWork}/>
-            <Timer/>  
+            <Timer
+              shopName={auth.response.name}
+            />
           </React.Fragment>
         }
       </Layout>

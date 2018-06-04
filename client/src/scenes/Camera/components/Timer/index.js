@@ -21,15 +21,20 @@ class Component extends React.Component {
     clearInterval(this.state.timerInterval);
   }
   render () {
-    const { classes } = this.props;
+    const { classes, shopName } = this.props;
 
     return (
-      <Text align="center">
-        {
-          dayjs(this.state.time)
-          .format('YYYY-MM-DD HH:mm:ss')
-        }
-      </Text>
+      <React.Fragment>
+        <Text variant="subheading" align="center">
+          {shopName}
+        </Text>
+        <Text align="center">
+          {
+            dayjs(this.state.time)
+            .format('YYYY-MM-DD HH:mm:ss')
+          }
+        </Text>
+      </React.Fragment>
     );
   }
 }

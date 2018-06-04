@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import Text from '@material-ui/core/Typography';
@@ -13,6 +14,13 @@ const styles = {
   texts: {
     textAlign: 'center',
     margin: 'auto',
+  },
+  button: {
+    marginTop: 16,
+    fontSize: 20,
+  },
+  half: {
+    width: '50%',
   },
 };
 class Component extends React.Component {
@@ -48,19 +56,40 @@ class Component extends React.Component {
                     </Text> : null
                 }
               </div>
-              <Button
-                size="large"
-                variant="raised"
-                fullWidth
-                color='primary'
-                onClick={() => handleClick(work ? 'end':'start', { ...response, shop })}
-              >확인</Button>
+              <div>
+                <Button
+                  className={classNames(classes.button, classes.half)}
+                  variant="raised"
+                  color='primary'
+                  onClick={() => handleClick(work ? 'end':'start', { ...response, shop })}
+                >
+                  확인
+                </Button>
+                <Button
+                  className={classNames(classes.button, classes.half)}
+                  onClick={() => handleClick('recapture')}
+                  variant="outlined"
+                  color="primary"
+                >
+                  재촬영
+                </Button>
+              </div>
             </React.Fragment> :
-            <Text>
-              인식 불가
-            </Text>
+            <React.Fragment>
+              <Text>
+                인식 불가
+              </Text>
+              <Button
+                className={classes.button}
+                fullWidth
+                onClick={() => handleClick('recapture')}
+                variant="outlined"
+                color="primary"
+              >
+                재촬영
+              </Button>
+            </React.Fragment>
         }
-        <Button size="large" fullWidth onClick={() => handleClick('recapture')}>재촬영</Button>
       </div>
     );
   }
