@@ -97,7 +97,6 @@ class Scene extends React.Component {
   render() {
     const { formDialogOn, selectedRow, selectedShop, selectedDate } = this.state;
     const { workList, shopList, staffList, auth } = this.props;
-    console.log(workList.response);
     return (
       <React.Fragment>
         {
@@ -110,17 +109,20 @@ class Scene extends React.Component {
                 shopList={shopList.response || []}
                 handleHeaderMenuClick={this.handleHeaderMenuClick}
               />
-              <Calendar
-                events={workList.response.filter(work => work.shop.id === selectedShop.id).map(work => ({
-                  id: work.id,
-                  title: work.staff.name,
-                  start: new Date(work.datetime),
-                  end: new Date(work.endDatetime),
-                  ...work
-                }))}
-                onSelectEvent={this.handleWorkClick}
-                onSelectSlot={this.handleDateClick}
-              />
+              {
+                selectedShop ?
+                  <Calendar
+                    events={workList.response.filter(work => work.shop.id === selectedShop.id).map(work => ({
+                      id: work.id,
+                      title: work.staff.name,
+                      start: new Date(work.datetime),
+                      end: new Date(work.endDatetime),
+                      ...work
+                    }))}
+                    onSelectEvent={this.handleWorkClick}
+                    onSelectSlot={this.handleDateClick}
+                  /> : null
+              }
             </Layout>:<Error/>
         }
         <FormDialog
