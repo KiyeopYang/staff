@@ -31,7 +31,7 @@ class Component extends React.Component {
         <FormControl>
           <InputLabel htmlFor="shop-simple">매장</InputLabel>
           <Select
-            value={selectedShop.id || ""}
+            value={selectedShop ? selectedShop.id : ""}
             onChange={e =>
               handleHeaderMenuClick('shopSelect', shopList.find(
                 shop => shop.id === e.target.value,
