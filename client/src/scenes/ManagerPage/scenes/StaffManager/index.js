@@ -71,18 +71,7 @@ class Scene extends React.Component {
   };
   render() {
     const { formDialogOn, selectedRow } = this.state;
-    const { staffList, shopList } = this.props;
-    console.log(staffList);
-    // let data;
-    // if (staffList.response) {
-    //   data = staffList.response.map((staff => ({
-    //     ...staff,
-    //     shopName: staff.shop ? staff.shop.name : '',
-    //     qr: <QRCode
-    //       size={512}
-    //       value={staff.id}
-    //     />
-    // }
+    const { staffList, shopList, auth } = this.props;
     return (
       <React.Fragment>
         {
@@ -90,7 +79,8 @@ class Scene extends React.Component {
             <Loader/> :
           staffList.response ?
             <Table
-              title="점원"
+              disabled={!auth.response.isAdmin}
+              title="직원"
               data={staffList.response.map((staff) => {
                 return {
                   ...staff,
@@ -110,7 +100,8 @@ class Scene extends React.Component {
             <Error/>
         }
         <FormDialog
-          title={selectedRow ? "수정" : "삭제"}
+          disabled={!auth.response.isAdmin}
+          title={selectedRow ? "수정" : "생성"}
           loading={staffCreate.loading || staffUpdate.loading}
           open={formDialogOn}
           onClose={() => this.setState({
@@ -125,6 +116,7 @@ class Scene extends React.Component {
   }
 }
 const mapStateToProps = state => ({
+  auth: state.data.auth,
   staffList: state.ManagerPage.data.staffList,
   staffCreate: state.ManagerPage.StaffManager.data.staffCreate,
   staffRemove: state.ManagerPage.StaffManager.data.staffRemove,

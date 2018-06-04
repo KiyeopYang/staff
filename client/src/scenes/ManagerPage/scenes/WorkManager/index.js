@@ -4,12 +4,6 @@ import { bindActionCreators } from 'redux';
 import {
   withRouter,
 } from 'react-router-dom';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 import Table from '../../components/Table';
 import {
   shopList,
@@ -33,17 +27,21 @@ import Loader from '../../../../components/Loader';
 import Error from '../../../../components/Error';
 import FormDialog from './components/FormDialog';
 import Calendar from './components/Calendar';
+import Layout from './components/Layout';
+import HeaderMenu from './components/HeaderMenu';
+import makeExcel from './modules/makeExcel';
 
 const initialState = {
   formDialogOn: false,
   selectedRow: null,
+  selectedDate: null,
 };
 class Scene extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       ...initialState,
-      selectedShop: this.props.auth.response.id,
+      selectedShop: this.props.auth.response,
     };
     this.props.requestShopList();
     this.props.requestStaffList();
@@ -60,65 +58,60 @@ class Scene extends React.Component {
       selectedRow: this.props.workList.response.find(o => String(o.id) === String(input.id)),
     });
   };
-  handleTableMenuClick = (name, data) => {
+  handleDateClick = ({ start }) => {
+    this.setState({
+      formDialogOn: true,
+      selectedRow: null,
+      selectedDate: new Date(start),
+    });
+  };
+  handleHeaderMenuClick = (name, data) => {
     switch(name) {
-      case 'create': this.setState({
-          formDialogOn: true,
-          selectedRow: null,
+      case 'shopSelect': this.setState({
+          selectedShop: data,
         });
         break;
-      case 'remove':
-        this.props.requestWorkRemove(data);
+      case 'excel':
+        makeExcel(this.props.workList.response);
       default:
         break;
     }
   };
   handleFormSubmit = (input) => {
     const { mode } = input;
-    console.log('input', input)
+    const { selectedShop } = this.state;
     if (mode === 'create') {
-      this.props.requestWorkCreate(input);
+      this.props.requestWorkCreate({
+        ...input,
+        shop: selectedShop,
+      });
     } else if (mode === 'update') {
-      this.props.requestWorkUpdate(input);
+      this.props.requestWorkUpdate({
+        ...input,
+        shop: selectedShop,
+      });
     } else if (mode === 'remove') {
       this.props.requestWorkRemove([input.id]);
     }
   };
   render() {
-    const { formDialogOn, selectedRow, selectedShop } = this.state;
-    const { workList, shopList, staffList } = this.props;
+    const { formDialogOn, selectedRow, selectedShop, selectedDate } = this.state;
+    const { workList, shopList, staffList, auth } = this.props;
+    console.log(workList.response);
     return (
       <React.Fragment>
         {
           workList.loading || workRemove.loading ?
             <Loader/> :
           workList.response ?
-            <React.Fragment>
-              <FormControl>
-                <InputLabel htmlFor="shop-simple">매장</InputLabel>
-                <Select
-                  value={selectedShop}
-                  onChange={e => this.setState({
-                    selectedShop: e.target.value,
-                  })}
-                  inputProps={{
-                    name: 'shop',
-                    id: 'shop-simple',
-                  }}
-                >
-                  <MenuItem value="">
-                    <em>선택</em>
-                  </MenuItem>
-                  {
-                    shopList.response ?
-                      shopList.response.map(shop => (
-                        <MenuItem key={shop.id} value={shop.id}>{shop.name}</MenuItem>
-                      )) : null
-                  }
-                </Select>
-              </FormControl>
+            <Layout>
+              <HeaderMenu
+                selectedShop={selectedShop}
+                shopList={shopList.response || []}
+                handleHeaderMenuClick={this.handleHeaderMenuClick}
+              />
               <Calendar
-                events={workList.response.filter(work => work.staff.shopId === selectedShop).map(work => ({
+                events={workList.response.filter(work => work.shop.id === selectedShop.id).map(work => ({
                   id: work.id,
                   title: work.staff.name,
                   start: new Date(work.datetime),
@@ -126,11 +119,12 @@ class Scene extends React.Component {
                   ...work
                 }))}
                 onSelectEvent={this.handleWorkClick}
-                onSelectSlot={console.log}
+                onSelectSlot={this.handleDateClick}
               />
-            </React.Fragment>: <Error/>
+            </Layout>:<Error/>
         }
         <FormDialog
+          disabled={!auth.response.isAdmin}
           title={"업무"}
           loading={workCreate.loading || workUpdate.loading}
           open={formDialogOn}
@@ -138,8 +132,9 @@ class Scene extends React.Component {
             formDialogOn: false,
           })}
           selected={selectedRow}
+          selectedDate={selectedDate}
           handleSubmit={this.handleFormSubmit}
-          staffList={staffList.response ? staffList.response.filter(staff => staff.shopId === selectedShop) : []}
+          staffList={staffList.response ? staffList.response : []} //여기부터
         />
       </React.Fragment>
     );

@@ -14,6 +14,13 @@ const Work = new Schema({
       ref: 'shop',
     },
   },
+  shop: {
+    _id: {
+      type: Schema.Types.ObjectId,
+      ref: 'shop',
+    },
+    name: String,
+  },
   datetime: {
     type: Date,
     default: Date.now,

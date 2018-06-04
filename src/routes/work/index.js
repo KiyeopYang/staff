@@ -17,12 +17,16 @@ router.post(
   '/',
   async (req, res) => {
     const PROCESS = '생성';
-    const { staff, ...rest } = req.body;
+    const { staff, shop, ...rest } = req.body;
     try {
       res.json(fromMongo((await new Work({
         staff: {
           _id: mongoose.Types.ObjectId(staff.id),
           ...(toMongo(staff)),
+        },
+        shop: {
+          _id: mongoose.Types.ObjectId(shop.id),
+          ...(toMongo(shop)),
         },
         ...rest,
       }).save()).toObject()));
@@ -39,15 +43,19 @@ router.put(
   async (req, res) => {
     const PROCESS = '수정';
     try {
-      const { id, endDatetime, staff, ...rest } = req.body;
+      const { id, endDatetime, staff, shop, ...rest } = req.body;
       res.json(await Work.updateOne(
         { _id: mongoose.Types.ObjectId(id) },
         { $set:
             {
               ...rest,
               staff: {
-                _id: mongoose.Types.ObjectId(staff.id || staff._id),
-                ...staff,
+                _id: mongoose.Types.ObjectId(staff.id),
+                ...toMongo(staff),
+              },
+              shop: {
+                _id: mongoose.Types.ObjectId(shop.id),
+                ...toMongo(shop),
               },
               endDatetime: endDatetime ? endDatetime : Date.now(),
             },
@@ -89,6 +97,7 @@ router.get(
       res.json(fromMongo(works.map(o => ({
         ...o.toObject(),
         staff: fromMongo(o.staff.toObject()),
+        shop: fromMongo(o.shop.toObject()),
       }))));
     } catch (error) {
       logging.error(error);

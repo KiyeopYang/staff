@@ -22,6 +22,10 @@ const Shop = new Schema({
     type: String,
     unique: true,
   },
+  isAdmin: {
+    type: Boolean,
+    default: false,
+  },
 });
 Shop.methods.passwordIsValid = function passwordIsValid(password) {
   try {

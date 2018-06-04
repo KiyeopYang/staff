@@ -34,6 +34,7 @@ class App extends Component {
       auth,
     } = this.props;
     let rendered;
+    console.log(auth);
     if (auth.loading) {
       rendered = <Loader/>;
     } else if (!auth.response) {

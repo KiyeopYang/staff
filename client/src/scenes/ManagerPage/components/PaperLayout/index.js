@@ -6,6 +6,7 @@ const styles = theme => ({
   root: {
     width: '100%',
     marginTop: theme.spacing.unit * 3,
+    marginBottom: theme.spacing.unit * 3,
   },
 });
 class Component extends React.Component {

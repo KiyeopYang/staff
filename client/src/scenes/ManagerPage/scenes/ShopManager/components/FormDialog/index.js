@@ -2,6 +2,9 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import update from 'react-addons-update';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import Switch from '@material-ui/core/Switch';
 import Dialog from '../../../../../../components/Dialog';
 import Loader from '../../../../../../components/Loader';
 
@@ -11,6 +14,7 @@ const initState = {
   userId: '',
   password: '',
   name: '',
+  isAdmin: false,
 };
 const styles = theme => ({
   layout: {
@@ -35,6 +39,7 @@ class Component extends React.Component {
           userId,
           name,
           password,
+          isAdmin,
         } = nextProps.selected;
         this.setState({
           id,
@@ -42,6 +47,7 @@ class Component extends React.Component {
           userId,
           password,
           name,
+          isAdmin,
         });
       }
     }
@@ -64,12 +70,13 @@ class Component extends React.Component {
       userId,
       password,
       name,
+      isAdmin,
     } = this.state;
-    const { classes, loading, ...props } = this.props;
+    const { classes, loading, disabled, ...props } = this.props;
     return (
       <Dialog
         onSubmit={this.handleSubmit}
-        disabled={this.isDisabled()}
+        disabled={disabled || this.isDisabled()}
         {...props}
       >
         {loading ? <Loader/> : null}
@@ -95,6 +102,17 @@ class Component extends React.Component {
             fullWidth
             value={name}
             onChange={this.handleChange('name')}
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={isAdmin}
+                onChange={e => this.setState({ isAdmin: e.target.checked })}
+                value="isAdmin"
+                color="primary"
+              />
+            }
+            label="관리자"
           />
         </div>
       </Dialog>

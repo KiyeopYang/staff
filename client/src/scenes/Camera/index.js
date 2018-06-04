@@ -93,11 +93,14 @@ class Scene extends React.Component {
     } = this.state;
     const {
       getWork,
+      auth,
     } = this.props;
+    console.log(auth);
     return (
       <Layout>
         {stopCapture ?
           <Result
+            shop={auth.response}
             response={getWork.response}
             handleClick={this.handleResultClick}
           /> :
@@ -122,6 +125,7 @@ class Scene extends React.Component {
   }
 }
 const mapStateToProps = state => ({
+  auth: state.data.auth,
   getWork: state.Camera.data.getWork,
   startWork: state.Camera.data.startWork,
   endWork: state.Camera.data.endWork,

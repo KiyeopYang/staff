@@ -17,7 +17,7 @@ const styles = {
 };
 class Component extends React.Component {
   render () {
-    const { classes, response, handleClick } = this.props;
+    const { classes, response, shop, handleClick } = this.props;
     const { work, staff } = response;
     return (
       <div>
@@ -30,7 +30,7 @@ class Component extends React.Component {
                   이름: {staff.name}
                 </Text>
                 <Text variant="subheading" gutterBottom>
-                  매장: {staff.shop.name}
+                  근무 매장: {shop.name}
                 </Text>
                 <Text variant="subheading" gutterBottom>
                   출근 시각: {
@@ -53,7 +53,7 @@ class Component extends React.Component {
                 variant="raised"
                 fullWidth
                 color='primary'
-                onClick={() => handleClick(work ? 'end':'start', response)}
+                onClick={() => handleClick(work ? 'end':'start', { ...response, shop })}
               >확인</Button>
             </React.Fragment> :
             <Text>

@@ -65,7 +65,7 @@ class Scene extends React.Component {
   };
   render() {
     const { formDialogOn, selectedRow } = this.state;
-    const { shopList } = this.props;
+    const { shopList, auth } = this.props;
     return (
       <React.Fragment>
         {
@@ -73,19 +73,25 @@ class Scene extends React.Component {
             <Loader/> :
           shopList.response ?
             <Table
+              disabled={!auth.response.isAdmin}
               title="매장"
-              data={shopList.response}
+              data={shopList.response.map(shop => ({
+                ...shop,
+                isAdmin: shop.isAdmin ? '관리자' : '일반',
+              }))}
               handleRowClick={this.handleTableRowClick}
               handleMenuClick={this.handleTableMenuClick}
               columnData={[
                 { id: 'userId', numeric: false, disablePadding: false, label: 'ID' },
-                { id: 'name', numeric: false, disablePadding: false, label: "이름"},
+                { id: 'name', numeric: false, disablePadding: false, label: '이름' },
+                { id: 'isAdmin', numeric: false, disablePadding: false, label: '권한' },
               ]}
             /> :
             <Error/>
         }
         <FormDialog
-          title={selectedRow ? "수정":"삭제"}
+          disabled={!auth.response.isAdmin}
+          title={selectedRow ? "수정":"생성"}
           loading={shopCreate.loading || shopUpdate.loading}
           open={formDialogOn}
           onClose={() => this.setState({
@@ -99,6 +105,7 @@ class Scene extends React.Component {
   }
 }
 const mapStateToProps = state => ({
+  auth: state.data.auth,
   shopList: state.ManagerPage.data.shopList,
   shopCreate: state.ManagerPage.ShopManager.data.shopCreate,
   shopRemove: state.ManagerPage.ShopManager.data.shopRemove,

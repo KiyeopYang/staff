@@ -71,11 +71,12 @@ class Component extends React.Component {
       phone,
       shopId,
     } = this.state;
-    const { classes, loading, shopList, ...props } = this.props;
+    const { classes, loading, shopList, disabled, ...props } = this.props;
     return (
       <Dialog
+        title={"생성"}
         onSubmit={this.handleSubmit}
-        disabled={this.isDisabled()}
+        disabled={disabled || this.isDisabled()}
         {...props}
       >
         {loading ? <Loader/> : null}

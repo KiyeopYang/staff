@@ -18,7 +18,7 @@ function parseDatetime(date) {
 const initState = {
   mode: 'create',
   id: '',
-  staff: {},
+  staff: null,
   datetime: new Date(),
   endDatetime: new Date(),
 };
@@ -35,7 +35,14 @@ class Component extends React.Component {
   state = initState;
   componentWillReceiveProps(nextProps) {
     if (!nextProps.selected) {
-      this.setState(initState);
+      const { selectedDate } = nextProps;
+      this.setState({
+        mode: 'create',
+        id: '',
+        staff: null,
+        datetime: selectedDate,
+        endDatetime: selectedDate,
+      });
     } else {
       const prevRow = JSON.stringify(this.props.selected);
       const nextRow = JSON.stringify(nextProps.selected);
@@ -66,6 +73,7 @@ class Component extends React.Component {
     this.props.handleSubmit({...this.state, mode: 'remove'});
   };
   isDisabled = () => {
+    console.log(this.state.staff);
     if (!this.state.staff || this.state.staff.id === '') {
       return true;
     }
@@ -76,17 +84,15 @@ class Component extends React.Component {
       staff,
       datetime,
       endDatetime,
+      mode,
     } = this.state;
-    const { classes, loading, staffList, ...props } = this.props;
-    console.log(staffList);
-    console.log(props);
-    console.log(this.state);
+    const { classes, loading, staffList, disabled, ...props } = this.props;
     return (
       <Dialog
         title={"title"}
         onSubmit={this.handleSubmit}
-        onRemove={this.handleRemove}
-        disabled={this.isDisabled()}
+        onRemove={mode !== 'create' ? this.handleRemove:null}
+        disabled={disabled || this.isDisabled()}
         {...props}
       >
         {loading ? <Loader/> : null}
@@ -108,7 +114,7 @@ class Component extends React.Component {
               </MenuItem>
               {
                 staffList.map(staff => (
-                  <MenuItem key={staff.id} value={staff.id}>{staff.name}</MenuItem>
+                  <MenuItem key={staff.id} value={staff.id}>{staff.name} - {staff.shop.name}</MenuItem>
                 ))
               }
             </Select>
